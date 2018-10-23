@@ -26,7 +26,7 @@ pipeline {
      }
 
     stages {
-        stage('Test Scripts") {
+        stage('Test Scripts') {
           sh 'make test'
         }
   
