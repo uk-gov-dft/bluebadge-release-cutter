@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent {label "Functional"}
 
     environment {
         GITHUB_TOKEN=credentials('GITHUB_TOKEN')
