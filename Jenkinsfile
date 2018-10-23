@@ -1,15 +1,15 @@
 pipeline {
-    agent 
+    agent any
 
     parameters {
-        string(defaultValue: 'develop', description: '', name: 'LA_VERSION')
-        string(defaultValue: 'develop', description: '', name: 'UM_VERSION')
-        string(defaultValue: 'develop', description: '', name: 'BB_VERSION')
-        string(defaultValue: 'develop', description: '', name: 'AP_VERSION')
-        string(defaultValue: 'develop', description: '', name: 'AZ_VERSION')
-        string(defaultValue: 'develop', description: '', name: 'MG_VERSION')
-        string(defaultValue: 'develop', description: '', name: 'RD_VERSION')
-        string(defaultValue: 'develop', description: '', name: 'CA_VERSION')
+        string(name: 'LA_VERSION')
+        string(name: 'UM_VERSION')
+        string(name: 'BB_VERSION')
+        string(name: 'AP_VERSION')
+        string(name: 'AZ_VERSION')
+        string(name: 'MG_VERSION')
+        string(name: 'RD_VERSION')
+        string(name: 'CA_VERSION')
     }
 
     environment {
