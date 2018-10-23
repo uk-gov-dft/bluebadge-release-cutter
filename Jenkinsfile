@@ -17,7 +17,7 @@ pipeline {
 
     post {
         always {
-            echo 'I finished!'
+          cleanWs()
         }
         success {
             echo 'I succeeeded!'
