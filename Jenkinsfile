@@ -32,36 +32,10 @@ pipeline {
   
         stage('Clone the applications') {
             steps {
+                sh 'git clone "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/la-webapp.git"'
                 dir('la-webapp') {
-                    sh 'git clone "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/la-webapp.git"'
                     ./semverit
                 }
-/*
-                dir('usermanagement-service') {
-                    git url: "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/usermanagement-service.git"
-                    ./semverit
-                }
-                dir('badgemanagement-service') {
-                    git url: "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/badgemanagement-service.git"
-                    ./semverit
-                }
-                dir('applications-service') {
-                    git url: "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/applications-service.git"
-                    ./semverit
-                }
-                dir('authorisation-service') {
-                    git url: "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/authorisation-service.git"
-                    ./semverit
-                }
-                dir('message-service') {
-                    git url: "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/message-service.git"
-                    ./semverit
-                }
-                dir('referencedata-service') {
-                    git url: "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/referencedata-service.git"
-                    ./semverit
-                }
-*/
             } 
         }
     }
