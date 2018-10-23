@@ -34,7 +34,7 @@ pipeline {
             steps {
                 sh 'git clone "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/la-webapp.git"'
                 dir('la-webapp') {
-                    ./semverit
+                    sh '. ../semverit && getNextVersion $(pwd)'
                 }
             } 
         }
