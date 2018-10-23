@@ -10,7 +10,7 @@ pipeline {
         stage('Clone the applications') {
             steps {
                 sh 'git clone "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/la-webapp.git"'
-                sh '. semverit && getNextVersion la-webapp'
+                sh '. ./semverit && getNextVersion la-webapp'
             } 
         }
     }
