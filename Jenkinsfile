@@ -6,12 +6,6 @@ pipeline {
      }
 
     stages {
-
-        stage('Test Scripts') {
-          steps {
-            sh 'make test'
-          }
-        }
   
         stage('Clone the applications') {
             steps {
