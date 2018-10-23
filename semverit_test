@@ -1,0 +1,254 @@
+#! /bin/sh
+# file: semverit_test.sh
+
+generate_base_project(){
+  git init > /dev/null
+  echo "change" >> README.md
+  git init > /dev/null
+  git add README.md > /dev/null
+  git commit -m "first commit" > /dev/null
+}
+
+generate_change(){
+  DIR="$1"
+  (cd "$DIR" && \
+  echo -n "change" >> README.md && \
+  git commit -am "updating") > /dev/null
+}
+
+generate_breaking_change(){
+  DIR="$1"
+  (cd "$DIR" && \
+  echo "breaking change" >> README.md && \
+  git commit -am "break/something") > /dev/null
+}
+
+generate_feature_change(){
+  DIR="$1"
+  (cd "$DIR" && \
+  echo "feature" >> README.md && \
+  git commit -am "feature/something") > /dev/null
+}
+
+generate_patch_change(){
+  DIR="$1"
+  (cd "$DIR" && \
+  echo "patch" >> README.md && \
+  git commit -am "bugfix/something") > /dev/null
+}
+
+tag(){
+  DIR="$1"
+  VERSION="$2"
+  (cd "$DIR" && \
+    git tag -a "$VERSION" -m "$VERSION" > /dev/null)
+}
+
+testGetNextVersionReturnsEmpty(){
+  # Setup
+  cd $(mktemp -d)
+  DIR=$(pwd)
+
+  generate_base_project 
+  generate_change "$DIR" "$EXPECTED_VERSION" 
+  tag "$DIR" "0.1.0"
+
+  assertEquals "" "$(getNextVersion $DIR)"
+}
+
+testGetInitialVersionIfNoTagsExist(){
+  EXPECTED_VERSION="0.1.0"
+
+  cd $(mktemp -d)
+  generate_base_project
+
+  DIR=$(pwd)
+  assertEquals "$EXPECTED_VERSION" "$(getNextVersion $DIR)"
+}
+
+testIncrementMajorWithBreakingChange(){
+  EXISTING_VERSIONS="0.1.0"
+  EXPECTED_VERSION="1.0.0"
+  cd $(mktemp -d)
+  DIR=$(pwd)
+
+  generate_base_project
+  generate_breaking_change "$DIR"
+  tag "$DIR" "0.1.0"
+  generate_breaking_change "$DIR"
+  
+  assertEquals "$EXPECTED_VERSION" "$(getNextVersion $DIR)"
+}
+
+testIncrementingMinorWithFeature(){
+  EXISTING_VERSIONS="0.1.0"
+  EXPECTED_VERSION="0.2.0"
+  cd $(mktemp -d)
+  DIR=$(pwd)
+
+  generate_base_project
+  generate_feature_change "$DIR"
+  tag "$DIR" "$EXISTING_VERSIONS"
+  generate_feature_change "$DIR"
+  
+  assertEquals "$EXPECTED_VERSION" "$(getNextVersion $DIR)"
+}
+
+testIncrementMinorWithFeatureMaintainsMajor(){
+  EXISTING_VERSIONS="3.1.0"
+  EXPECTED_VERSION="3.2.0"
+  cd $(mktemp -d)
+  DIR=$(pwd)
+
+  generate_base_project
+  generate_feature_change "$DIR"
+  tag "$DIR" "$EXISTING_VERSIONS"
+  generate_feature_change "$DIR"
+  
+  assertEquals "$EXPECTED_VERSION" "$(getNextVersion $DIR)"
+}
+
+testIncrementPatchWithBugfix(){
+  EXISTING_VERSIONS="0.1.0"
+  EXPECTED_VERSION="0.1.1"
+  cd $(mktemp -d)
+  DIR=$(pwd)
+
+  generate_base_project
+  generate_patch_change "$DIR"
+  tag "$DIR" "$EXISTING_VERSIONS"
+  generate_patch_change "$DIR"
+  
+  assertEquals "$EXPECTED_VERSION" "$(getNextVersion $DIR)"
+}
+
+testFeatureWithPathIncrementsMinorAndResetsPatch(){
+  EXISTING_VERSIONS="3.1.0"
+  EXPECTED_VERSION="3.2.0"
+  cd $(mktemp -d)
+  DIR=$(pwd)
+
+  generate_base_project
+  generate_feature_change "$DIR"
+  tag "$DIR" "$EXISTING_VERSIONS"
+  generate_feature_change "$DIR"
+  generate_patch_change "$DIR"
+  
+  assertEquals "$EXPECTED_VERSION" "$(getNextVersion $DIR)"
+}
+
+testMajorWithFeatureAndPatchIncrmentsMajorAndResetsMinorAndPatch(){
+  EXISTING_VERSIONS="3.1.0"
+  EXPECTED_VERSION="4.0.0"
+  cd $(mktemp -d)
+  DIR=$(pwd)
+
+  generate_base_project
+  generate_feature_change "$DIR"
+  tag "$DIR" "$EXISTING_VERSIONS"
+  generate_breaking_change "$DIR"
+  generate_feature_change "$DIR"
+  generate_patch_change "$DIR"
+  
+  assertEquals "$EXPECTED_VERSION" "$(getNextVersion $DIR)"
+}
+
+testMajorResetMeta(){
+  EXISTING_VERSIONS="3.1.0-boom"
+  EXPECTED_VERSION="4.0.0"
+  cd $(mktemp -d)
+  DIR=$(pwd)
+
+  generate_base_project
+  generate_feature_change "$DIR"
+  tag "$DIR" "$EXISTING_VERSIONS"
+  generate_breaking_change "$DIR"
+
+  assertEquals "$EXPECTED_VERSION" "$(getNextVersion $DIR)"
+}
+
+testMinorResetMeta(){
+  EXISTING_VERSIONS="3.1.0-boom"
+  EXPECTED_VERSION="3.2.0"
+  cd $(mktemp -d)
+  DIR=$(pwd)
+
+  generate_base_project
+  generate_feature_change "$DIR"
+  tag "$DIR" "$EXISTING_VERSIONS"
+  generate_feature_change "$DIR"
+
+  assertEquals "$EXPECTED_VERSION" "$(getNextVersion $DIR)"
+}
+
+testPatchResetMeta(){
+  EXISTING_VERSIONS="3.1.0-boom"
+  EXPECTED_VERSION="3.1.1"
+  cd $(mktemp -d)
+  DIR=$(pwd)
+
+  generate_base_project
+  generate_feature_change "$DIR"
+  tag "$DIR" "$EXISTING_VERSIONS"
+  generate_patch_change "$DIR"
+
+  assertEquals "$EXPECTED_VERSION" "$(getNextVersion $DIR)"
+}
+
+testIncrementMajor(){
+  EXISTING_VERSION="0.1.0"
+  EXPECTED_VERSION="1.0.0"
+  
+  assertEquals "$EXPECTED_VERSION" $(incrementMajor $EXISTING_VERSION) 
+}
+
+testIncrementMinor(){
+  EXISTING_VERSION="0.1.0"
+  EXPECTED_VERSION="0.2.0"
+  
+  assertEquals "$EXPECTED_VERSION" $(incrementMinor $EXISTING_VERSION) 
+}
+
+testIncrementPatch(){
+  EXISTING_VERSION="0.1.0"
+  EXPECTED_VERSION="0.1.1"
+  
+  assertEquals "$EXPECTED_VERSION" $(incrementPatch $EXISTING_VERSION) 
+}
+
+testHasBreakingChanges(){
+  cd $(mktemp -d)
+  DIR=$(pwd)
+  generate_base_project
+
+  generate_breaking_change "$DIR" 
+  tag "$DIR" "0.1.0" 
+  generate_breaking_change "$DIR" 
+   
+  DIR=$(pwd)
+
+  if ! hasBreakingChanges "$DIR" "0.1.0"; then
+    fail
+  fi
+}
+
+testGetLastVersion(){
+  cd $(mktemp -d)
+  DIR=$(pwd)
+
+  generate_base_project
+  generate_change "$DIR"
+  tag "$DIR" "0.1.0"
+  generate_change "$DIR"
+  tag "$DIR" "0.2.0"
+
+  assertEquals "0.2.0" "$(getLastVersion "$DIR")"
+}
+
+oneTimeSetUp() {
+  # Load include to test.
+  . ./semverit
+}
+
+# Load and run shUnit2.
+. ./shunit2-2.1.7/shunit2
