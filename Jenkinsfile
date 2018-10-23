@@ -33,9 +33,10 @@ pipeline {
         stage('Clone the applications') {
             steps {
                 dir('la-webapp') {
-                    git url: "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/la-webapp.git"
+                    sh 'git clone "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/la-webapp.git"'
                     ./semverit
                 }
+/*
                 dir('usermanagement-service') {
                     git url: "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/usermanagement-service.git"
                     ./semverit
@@ -60,6 +61,7 @@ pipeline {
                     git url: "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/referencedata-service.git"
                     ./semverit
                 }
+*/
             } 
         }
     }
