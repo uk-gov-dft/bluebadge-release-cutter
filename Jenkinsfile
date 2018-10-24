@@ -8,7 +8,9 @@ pipeline {
     stages {
   
         stage('Get the tool') {
+            steps {
                 sh 'curl -LO https://github.com/reaandrew/semverit/archive/master.zip && unzip master.zip && cd semverit-master/ && make dist && mv dist/semverit ../'
+            }
         }
 
         stage('Cut la-webapp') {
