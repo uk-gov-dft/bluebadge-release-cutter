@@ -16,14 +16,14 @@ pipeline {
         stage('Cut la-webapp') {
             steps {
                 sh 'git clone "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/la-webapp.git"'
-                sh 'cut.sh ./la-webapp'
+                sh './cut.sh ./la-webapp'
             } 
         }
 
         stage('Cut usermanagement-service') {
             steps {
                 sh 'git clone "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/usermanagement-service.git"'
-                sh 'cut.sh ./usermanagement-service'
+                sh './cut.sh ./usermanagement-service'
             } 
         }
     }
