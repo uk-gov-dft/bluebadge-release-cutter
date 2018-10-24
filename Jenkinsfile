@@ -10,6 +10,8 @@ pipeline {
         stage('Get the tool') {
             steps {
                 sh 'curl -LO https://github.com/reaandrew/semverit/archive/master.zip && unzip master.zip && cd semverit-master/ && make dist && mv dist/semverit ../'
+                sh 'git config --global user.email "dft-buildbot-valtech@does.not.exist"'
+                sh 'git config --global user.name "dft-buildbot-valtech"'
             }
         }
 
