@@ -7,13 +7,21 @@ pipeline {
 
     stages {
   
-        stage('Clone the applications') {
-            steps {
+        stage('Get the tool') {
                 sh 'curl -LO https://github.com/reaandrew/semverit/archive/master.zip && unzip master.zip && cd semverit-master/ && make dist && mv dist/semverit ../'
+        }
+
+        stage('Cut la-webapp') {
+            steps {
                 sh 'git clone "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/la-webapp.git"'
-                sh 'pwd'
-                sh 'realpath ./la-webapp'
-                sh './semverit $(realpath ./la-webapp)'
+                sh 'cut.sh ./la-webapp)'
+            } 
+        }
+
+        stage('Cut usermanagement-service') {
+            steps {
+                sh 'git clone "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/usermanagement-service.git"'
+                sh 'cut.sh ./usermanagement-service)'
             } 
         }
     }
