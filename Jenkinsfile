@@ -9,8 +9,9 @@ pipeline {
   
         stage('Clone the applications') {
             steps {
+                sh 'curl -LO https://codeload.github.com/reaandrew/semverit/zip/master && unzip master.zip && cd master && make dist && mv dist/semverit ../'
                 sh 'git clone "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/la-webapp.git"'
-                sh '. ./semverit && getNextVersion la-webapp'
+                sh './semverit ./la-webapp'
             } 
         }
     }
