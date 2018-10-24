@@ -11,6 +11,7 @@ pipeline {
             steps {
                 sh 'curl -LO https://github.com/reaandrew/semverit/archive/master.zip && unzip master.zip && cd semverit-master/ && make dist && mv dist/semverit ../'
                 sh 'git clone "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/la-webapp.git"'
+                sh 'ls -la'
                 sh './semverit ./la-webapp'
             } 
         }
