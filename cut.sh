@@ -19,6 +19,8 @@ APPLICATIONS=( \
   RD,referencedata-service \
 )
 
+export PATH=$(pwd):$PATH
+
 rm -rf "$WORKSPACE"
 mkdir -p "$WORKSPACE"
 
