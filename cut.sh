@@ -7,6 +7,7 @@ if [ "$WORKSPACE" = "" ]; then
     exit 1
 fi
 
+pip install --user markdown2
 
 APPLICATIONS=( \
   LA,la-webapp \
@@ -53,12 +54,12 @@ do
     fi
     git add RELEASE_NOTES
     git commit -m "$NEXT_VERSION"
-    # git push origin develop
+    git push origin develop
     git tag -a "$NEXT_VERSION" -m "$NEXT_VERSION" || :
-    # git push origin "$NEXT_VERSION"
+    git push origin "$NEXT_VERSION"
     git checkout master
     git merge develop
-    # git push origin master
+    git push origin master
     echo | tee -a RELEASE_NOTES ../RELEASE_NOTES
   cd ../
 done
