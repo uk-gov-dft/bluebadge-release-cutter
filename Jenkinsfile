@@ -3,13 +3,13 @@ pipeline {
 
     environment {
         GITHUB_TOKEN=credentials('GITHUB_TOKEN')
+        JIRA_CREDS=credentials('JIRA_CREDS')
      }
 
     stages {
   
         stage('Get the tool') {
             steps {
-                
                 sh 'git config --global user.email "dft-buildbot-valtech@does.not.exist"'
                 sh 'git config --global user.name "dft-buildbot-valtech"'
             }

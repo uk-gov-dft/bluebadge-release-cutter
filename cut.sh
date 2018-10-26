@@ -42,7 +42,7 @@ do
       echo "## $NAME $NEXT_VERSION $(date -u)" | tee -a RELEASE_NOTES ../RELEASE_NOTES
       for id in $(git log "$LAST_VERSION".. | grep pull | grep -Eo "[A-Z]+(-|_)[0-9]+");
       do
-        summary=$(curl -s -u $(cat ~/.ssh/jira_creds) -X GET -H "Content-Type: application/json" "https://uk-gov-dft.atlassian.net/rest/api/2/issue/${id/_/-}" | jq '.fields.summary')
+        summary=$(curl -s -u $JIRA_CREDS -X GET -H "Content-Type: application/json" "https://uk-gov-dft.atlassian.net/rest/api/2/issue/${id/_/-}" | jq '.fields.summary')
         echo "- **$id** : $summary" | tee -a RELEASE_NOTES ../RELEASE_NOTES
       done 
     else
