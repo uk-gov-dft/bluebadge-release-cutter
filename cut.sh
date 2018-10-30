@@ -7,15 +7,17 @@ if [ "$WORKSPACE" = "" ]; then
     exit 1
 fi
 
-if [ "$RELEASE_NAME" = "" ]; then
+if [ "$RELEASE_NUMBER" = "" ]; then
     echo "ERROR: Must specify release name or number."
     exit 1
 fi
 
-if [ "$RELEASE_NAME" = "EMPTY" ]; then
+if [ "$RELEASE_NUMBER" = "EMPTY" ]; then
     echo "ERROR: Must specify release name or number."
     exit 1
 fi
+
+
 
 APPLICATIONS=( \
   LA,la-webapp \
@@ -35,11 +37,12 @@ mkdir -p "$WORKSPACE"
 
 cd "$WORKSPACE"
 
-SAFE_RELEASE_NAME="$(echo "$RELEASE_NAME" | tr -dc '[:alnum:]' | tr '[:upper:]' '[:lower:]' | fold -w 32 | head -n 1)"
-RELEASE_BRANCH_NAME="release/$SAFE_RELEASE_NAME"
-RELEASE_TAG_NAME="release-cut-$SAFE_RELEASE_NAME"
+SAFE_RELEASE_NUMBER="$(echo "$RELEASE_NUMBER" | tr -dc '[:alnum:]' | tr '[:upper:]' '[:lower:]' | fold -w 32 | head -n 1)"
+RELEASE_BRANCH_NAME="release/$SAFE_RELEASE_NUMBER"
+RELEASE_TAG_NAME="release-$SAFE_RELEASE_NUMBER"
 
-echo "# Release Notes #$SAFE_RELEASE_NAME $(date -u)" > ../RELEASE_NOTES.md
+
+echo "# Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" > ../RELEASE_NOTES.md
 for application in "${APPLICATIONS[@]}"
 do
   SHORTCODE=$(echo -n "$application" | cut -d, -f1)
