@@ -30,9 +30,9 @@ pipeline {
                   allowMissing: false,
                   alwaysLinkToLastBuild: false,
                   keepAll: true,
-                  reportDir: 'output',
+                  reportDir: '.',
                   reportFiles: 'RELEASE_NOTES.md',
-                  reportName: "RELEASE_NOTES.md"
+                  reportName: "Release Notes"
                 ])
             } 
         }
