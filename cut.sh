@@ -1,5 +1,7 @@
 #! /bin/bash
 
+pip install --user markdown2
+
 WORKSPACE="$1"
 
 if [ "$WORKSPACE" = "" ]; then
@@ -80,5 +82,7 @@ do
     echo >> ../../RELEASE_NOTES.md
   cd ../
 done
+
+python markdown2.py RELEASE_NOTES.md > RELEASE_NOTES.html
 
 cd ../

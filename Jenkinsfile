@@ -31,7 +31,7 @@ pipeline {
                   alwaysLinkToLastBuild: false,
                   keepAll: true,
                   reportDir: '.',
-                  reportFiles: 'RELEASE_NOTES.md',
+                  reportFiles: 'RELEASE_NOTES.html',
                   reportName: "Release Notes"
                 ])
             } 
