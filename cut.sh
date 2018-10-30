@@ -12,6 +12,11 @@ if [ "$RELEASE_NAME" = "" ]; then
     exit 1
 fi
 
+if [ "$RELEASE_NAME" = "EMPTY" ]; then
+    echo "ERROR: Must specify release name or number."
+    exit 1
+fi
+
 APPLICATIONS=( \
   LA,la-webapp \
   CA,citizen-webapp \
@@ -46,20 +51,20 @@ do
     git checkout -b "$RELEASE_BRANCH_NAME"
     git push origin 
 
-    echo "## $NAME $NEXT_VERSION $(date -u)" >> ../RELEASE_NOTES.md
+    echo "## $NAME $NEXT_VERSION $(date -u)" >> ../../RELEASE_NOTES.md
     echo
 
     if [ "$CHANGE" = "none" ]; then
-      echo "no changes in this release" >> ../RELEASE_NOTES.md
+      echo "no changes in this release" >> ../../RELEASE_NOTES.md
     else
 
       for id in $(git log "$RELEASE_BRANCH_NAME..$MASTER" --oneline | grep -Eo "[A-Z]+(-|_)[0-9]+"| sort | uniq );
       do
         summary=$(curl -s -u $JIRA_CREDS -X GET -H "Content-Type: application/json" "https://uk-gov-dft.atlassian.net/rest/api/2/issue/${id/_/-}" | jq '.fields.summary')
-        echo "- **$id** : $summary" >> ../RELEASE_NOTES.md
+        echo "- **$id** : $summary" >> ../../RELEASE_NOTES.md
       done 
     fi
-    echo >> ../RELEASE_NOTES.md
+    echo >> ../../RELEASE_NOTES.md
   cd ../
 done
 

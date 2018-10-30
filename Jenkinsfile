@@ -2,7 +2,7 @@ pipeline {
     agent {label "Functional"}
 
     parameters {
-        string(description: '', name: 'RELEASE_NAME')
+        string(defaultValue: 'EMPTY', description: '', name: 'RELEASE_NAME')
     }
 
     environment {
@@ -30,7 +30,7 @@ pipeline {
                   alwaysLinkToLastBuild: false,
                   keepAll: true,
                   reportDir: 'output',
-                  reportFiles: 'RELEASE_NOTES',
+                  reportFiles: 'RELEASE_NOTES.md',
                   reportName: "Release Notes"
                 ])
             } 
