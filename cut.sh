@@ -3,11 +3,14 @@
 WORKSPACE="$1"
 
 if [ "$WORKSPACE" = "" ]; then
-    echo "Must specify release number."
+    echo "ERROR: Must specify workspace."
     exit 1
 fi
 
-pip install --user markdown2
+if [ "$RELEASE_NAME" = "" ]; then
+    echo "ERROR: Must specify release name or number."
+    exit 1
+fi
 
 APPLICATIONS=( \
   LA,la-webapp \
@@ -27,68 +30,37 @@ mkdir -p "$WORKSPACE"
 
 cd "$WORKSPACE"
 
+RELEASE_BRANCH_NAME="release/$RELEASE_NAME"
+
 for application in "${APPLICATIONS[@]}"
 do
   SHORTCODE=$(echo -n "$application" | cut -d, -f1)
   NAME=$(echo -n "$application" | cut -d, -f2)
 
-  echo "Generating release notes."
-  echo 
   git clone --quiet "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/$NAME.git" > /dev/null
   cd "$NAME"
-    git checkout --quiet develop > /dev/null
-    NEXT_VERSION=$(semverit)
-    LAST_VERSION="$(git describe --abbrev=0)"
-    COMMIT_COUNT="$(git rev-list $LAST_VERSION.. --count)"
+    NEXT_VERSION="$(semverit | cut -d, -f1)"
+    CHANGE="$(semverit | cut -d, -f2)"
 
-    if [ "$COMMIT_COUNT" -gt 0 ]; then
-      echo "## $NAME $NEXT_VERSION $(date -u)" | tee -a RELEASE_NOTES ../RELEASE_NOTES
-      for id in $(git log "$LAST_VERSION".. | grep pull | grep -Eo "[A-Z]+(-|_)[0-9]+");
+    git checkout --quiet develop > /dev/null
+    git checkout -b "$RELEASE_BRANCH_NAME"
+    git push origin 
+
+    echo "## $NAME $NEXT_VERSION $(date -u)" >> ../RELEASE_NOTES.md
+    echo
+
+    if [ "$CHANGE" = "none" ]; then
+      echo "no changes in this release" >> ../RELEASE_NOTES.md
+    else
+
+      for id in $(git log "$RELEASE_BRANCH_NAME..$MASTER" --oneline | grep -Eo "[A-Z]+(-|_)[0-9]+"| sort | uniq );
       do
         summary=$(curl -s -u $JIRA_CREDS -X GET -H "Content-Type: application/json" "https://uk-gov-dft.atlassian.net/rest/api/2/issue/${id/_/-}" | jq '.fields.summary')
-        echo "- **$id** : $summary" | tee -a RELEASE_NOTES ../RELEASE_NOTES
+        echo "- **$id** : $summary" >> ../RELEASE_NOTES.md
       done 
-    else
-      echo "## $NAME $NEXT_VERSION $(date -u)" | tee -a RELEASE_NOTES ../RELEASE_NOTES
-      echo "No changes.  Nothing to do." | tee -a RELEASE_NOTES ../RELEASE_NOTES
     fi
-    git add RELEASE_NOTES
-    git commit -m "$NEXT_VERSION"
-    git push origin develop
-    git tag -a "$NEXT_VERSION" -m "$NEXT_VERSION" || :
-    git push origin "$NEXT_VERSION"
-    git checkout master
-    git merge develop
-    git push origin master
-    echo | tee -a RELEASE_NOTES ../RELEASE_NOTES
+    echo >> ../RELEASE_NOTES.md
   cd ../
 done
 
 cd ../
-
-
-# DIR=$1
-# NEXT_VERSION=$(./semverit $(realpath "$DIR"))
-# echo "NEXT VERSION: $NEXT_VERSION"
-# cd "$DIR" 
-
-# DEVELOP_VERSION="$(git describe --abbrev=0 remotes/origin/develop)"
-# MASTER_VERSION="$(git describe --abbrev=0 remotes/origin/master)"
-
-# echo "Develop: $DEVELOP_VERSION Master: $MASTER_VERSION"
-
-# if [[ "$DEVELOP_VERSION" == "$MASTER_VERSION"  ]]; then 
-#   if [[ "$(git describe --abbrev=0 remotes/origin/develop)" == "$(git describe remotes/origin/develop)" ]]; then
-#     echo "No change - nothing to do"
-#   else
-#     git checkout master 
-#     git pull origin master
-#     git pull --no-edit origin develop
-#     git push origin master 
-#     
-#     git tag -a "$NEXT_VERSION" -m "$NEXT_VERSION" || :
-#     git push origin "$NEXT_VERSION" || :
-#   fi
-# else
-#   echo "Version mis-match. Develop: $DEVELOP_VERSION Master: $MASTER_VERSION"
-# fi

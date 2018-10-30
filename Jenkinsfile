@@ -1,7 +1,12 @@
 pipeline {
     agent {label "Functional"}
 
+    parameters {
+        string(description: '', name: 'RELEASE_NAME')
+    }
+
     environment {
+        RELEASE_NAME="${params.RELEASE_NAME}"
         GITHUB_TOKEN=credentials('GITHUB_TOKEN')
         JIRA_CREDS=credentials('JIRA_CREDS')
      }
