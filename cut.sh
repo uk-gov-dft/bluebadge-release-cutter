@@ -53,8 +53,6 @@ do
     git checkout --quiet develop > /dev/null
     git checkout --quiet -b "$RELEASE_BRANCH_NAME" > /dev/null
     git push --quiet origin "$RELEASE_BRANCH_NAME" > /dev/null
-    git tag -a "$RELEASE_TAG_NAME" -m "$RELEASE_TAG_NAME"
-    git push origin "$RELEASE_TAG_NAME"
 
     git status
     pwd
@@ -66,6 +64,9 @@ do
     if [ "$CHANGE" = "none" ]; then
       echo "no changes in this release" >> ../../RELEASE_NOTES.md
     else
+      git tag -a "$NEXT_VERSION-rc1" -m "$NEXT_VERSION-rc1"
+      git push origin "$NEXT_VERSION-rc1"
+
       for id in $(git log origin/master.. --oneline | grep -Eo "[A-Z]+(-|_)[0-9]+"| sort | uniq );
       do
         echo $id
