@@ -17,6 +17,7 @@ pipeline {
             steps {
                 sh 'git config --global user.email "dft-buildbot-valtech@does.not.exist"'
                 sh 'git config --global user.name "dft-buildbot-valtech"'
+                sh 'git config --global push.default matching'
             }
         }
 

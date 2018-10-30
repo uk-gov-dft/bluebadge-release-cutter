@@ -35,8 +35,11 @@ mkdir -p "$WORKSPACE"
 
 cd "$WORKSPACE"
 
-RELEASE_BRANCH_NAME="release/$RELEASE_NAME"
+SAFE_RELEASE_NAME="$(echo "$RELEASE_NAME" | tr -dc '[:alnum:]' | tr '[:upper:]' '[:lower:]' | fold -w 32 | head -n 1)"
+RELEASE_BRANCH_NAME="release/$SAFE_RELEASE_NAME"
+RELEASE_TAG_NAME="release-cut-$SAFE_RELEASE_NAME"
 
+echo "# Release Notes #$SAFE_RELEASE_NAME $(date -u)" > ../RELEASE_NOTES.md
 for application in "${APPLICATIONS[@]}"
 do
   SHORTCODE=$(echo -n "$application" | cut -d, -f1)
@@ -48,18 +51,24 @@ do
     CHANGE="$(semverit | cut -d, -f2)"
 
     git checkout --quiet develop > /dev/null
-    git checkout -b "$RELEASE_BRANCH_NAME"
-    git push origin 
+    git checkout --quiet -b "$RELEASE_BRANCH_NAME" > /dev/null
+    git push --quiet origin "$RELEASE_BRANCH_NAME" > /dev/null
+    git tag -a "$RELEASE_TAG_NAME" -m "$RELEASE_TAG_NAME"
+    git push origin "$RELEASE_TAG_NAME"
+
+    git status
+    pwd
 
     echo "## $NAME $NEXT_VERSION $(date -u)" >> ../../RELEASE_NOTES.md
     echo
 
+    echo "Checking Change - $CHANGE"
     if [ "$CHANGE" = "none" ]; then
       echo "no changes in this release" >> ../../RELEASE_NOTES.md
     else
-
-      for id in $(git log "$RELEASE_BRANCH_NAME..$MASTER" --oneline | grep -Eo "[A-Z]+(-|_)[0-9]+"| sort | uniq );
+      for id in $(git log origin/master.. --oneline | grep -Eo "[A-Z]+(-|_)[0-9]+"| sort | uniq );
       do
+        echo $id
         summary=$(curl -s -u $JIRA_CREDS -X GET -H "Content-Type: application/json" "https://uk-gov-dft.atlassian.net/rest/api/2/issue/${id/_/-}" | jq '.fields.summary')
         echo "- **$id** : $summary" >> ../../RELEASE_NOTES.md
       done 
