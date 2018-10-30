@@ -32,7 +32,7 @@ pipeline {
                   keepAll: true,
                   reportDir: 'output',
                   reportFiles: 'RELEASE_NOTES.md',
-                  reportName: "Release Notes"
+                  reportName: "RELEASE_NOTES.md"
                 ])
             } 
         }
