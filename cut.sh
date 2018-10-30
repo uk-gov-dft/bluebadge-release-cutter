@@ -83,6 +83,6 @@ do
   cd ../
 done
 
-~/.local/bin/markdown2 RELEASE_NOTES.md > RELEASE_NOTES.html
+~/.local/bin/markdown2 ./RELEASE_NOTES.md > RELEASE_NOTES.html
 
 cd ../
