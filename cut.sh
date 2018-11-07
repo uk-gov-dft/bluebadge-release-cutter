@@ -44,13 +44,39 @@ RELEASE_BRANCH_NAME="release/$SAFE_RELEASE_NUMBER"
 RELEASE_TAG_NAME="release-$SAFE_RELEASE_NUMBER"
 
 
-echo "# Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" > ../RELEASE_NOTES.md
+# Need to select which branch to create the release from
+# Either create a release from the develop branch or the master branch
+
+# Preliminary Checks
 for application in "${APPLICATIONS[@]}"
 do
   SHORTCODE=$(echo -n "$application" | cut -d, -f1)
   NAME=$(echo -n "$application" | cut -d, -f2)
 
   git clone --quiet "https://$GITHUB_TOKEN:x-oauth-basic@github.com/uk-gov-dft/$NAME.git" > /dev/null
+  cd "$NAME"
+
+  # Check if this release has already been tagged
+  if git ls-remote --tags origin | grep -q "release-$RELEASE_NUMBER"; then
+    echo "This release has already been tagged"
+    exit 1
+  fi
+  if git branch -r | grep -q "release-$RELEASE_NUMBER"; then
+    echo "This release has already been branched"
+    exit 1
+  fi
+
+  # Need to also check the number is the next release if it is a number
+  cd ../
+done
+
+
+echo "# Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" > ../RELEASE_NOTES.md
+for application in "${APPLICATIONS[@]}"
+do
+  SHORTCODE=$(echo -n "$application" | cut -d, -f1)
+  NAME=$(echo -n "$application" | cut -d, -f2)
+
   cd "$NAME"
     NEXT_VERSION="$(semverit | cut -d, -f1)"
     CHANGE="$(semverit | cut -d, -f2)"
