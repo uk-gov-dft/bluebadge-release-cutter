@@ -47,6 +47,8 @@ RELEASE_TAG_NAME="release-$SAFE_RELEASE_NUMBER"
 # Need to select which branch to create the release from
 # Either create a release from the develop branch or the master branch
 
+BRANCH=develop
+
 # Preliminary Checks
 for application in "${APPLICATIONS[@]}"
 do
@@ -65,8 +67,9 @@ do
     echo "This release has already been branched"
     exit 1
   fi
-
+  
   # Need to also check the number is the next release if it is a number
+  # This would be a SHOULD HAVE but not essential
   cd ../
 done
 
@@ -81,7 +84,7 @@ do
     NEXT_VERSION="$(semverit | cut -d, -f1)"
     CHANGE="$(semverit | cut -d, -f2)"
 
-    git checkout --quiet develop > /dev/null
+    git checkout --quiet "$BRANCH" > /dev/null
     git checkout --quiet -b "$RELEASE_BRANCH_NAME" > /dev/null
     git push --quiet origin "$RELEASE_BRANCH_NAME" > /dev/null
 
