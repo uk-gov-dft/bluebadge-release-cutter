@@ -3,6 +3,7 @@ pipeline {
 
     parameters {
         string(defaultValue: 'EMPTY', description: '', name: 'RELEASE_NUMBER')
+        string(defaultValue: 'develop', description: '', name: 'TARGET_BRANCH')
     }
 
     environment {

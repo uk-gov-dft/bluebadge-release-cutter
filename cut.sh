@@ -9,6 +9,11 @@ if [ "$WORKSPACE" = "" ]; then
     exit 1
 fi
 
+if [ "$TARGET_BRANCH" = "" ]; then
+    echo "ERROR: Must specify target branch."
+    exit 1
+fi
+
 if [ "$RELEASE_NUMBER" = "" ]; then
     echo "ERROR: Must specify release name or number."
     exit 1
@@ -47,7 +52,7 @@ RELEASE_TAG_NAME="release-$SAFE_RELEASE_NUMBER"
 # Need to select which branch to create the release from
 # Either create a release from the develop branch or the master branch
 
-BRANCH=develop
+BRANCH="$TARGET_BRANCH"
 
 # Preliminary Checks
 for application in "${APPLICATIONS[@]}"
