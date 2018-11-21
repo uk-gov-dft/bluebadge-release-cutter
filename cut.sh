@@ -106,7 +106,7 @@ do
       git tag -a "$NEXT_VERSION-rc1" -m "$NEXT_VERSION-rc1"
       git push origin "$NEXT_VERSION-rc1"
 
-      for id in $(git log origin/master.. --oneline | grep -Eo "[A-Z]+(-|_)[0-9]+"| sort | uniq );
+      for id in $(git log --oneline $(git tag | sed -r "s/([0-9]+\.[0-9]+\.[0-9]+$)/\1\.99999/"|sort -V|sed s/\.99999$// | tail -n1).."$BRANCH" | grep pull | grep -Eo "[A-Z]+(-|_)[0-9]+"| sort | uniq );
       do
         echo $id
         summary=$(curl -s -u $JIRA_CREDS -X GET -H "Content-Type: application/json" "https://uk-gov-dft.atlassian.net/rest/api/2/issue/${id/_/-}" | jq '.fields.summary')
