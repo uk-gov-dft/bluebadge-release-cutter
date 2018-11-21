@@ -10,8 +10,7 @@ if [ "$WORKSPACE" = "" ]; then
 fi
 
 if [ "$TARGET_BRANCH" = "" ]; then
-    echo "ERROR: Must specify target branch."
-    exit 1
+    echo "ERROR: Must specify target branch." exit 1
 fi
 
 if [ "$RELEASE_NUMBER" = "" ]; then
@@ -86,10 +85,11 @@ do
   NAME=$(echo -n "$application" | cut -d, -f2)
 
   cd "$NAME"
+    git checkout --quiet "$BRANCH" > /dev/null
+
     NEXT_VERSION="$(semverit | cut -d, -f1)"
     CHANGE="$(semverit | cut -d, -f2)"
 
-    git checkout --quiet "$BRANCH" > /dev/null
     git checkout --quiet -b "$RELEASE_BRANCH_NAME" > /dev/null
     git push --quiet origin "$RELEASE_BRANCH_NAME" > /dev/null
 
@@ -103,15 +103,14 @@ do
     if [ "$CHANGE" = "none" ]; then
       echo "no changes in this release" >> ../../RELEASE_NOTES.md
     else
-      git tag -a "$NEXT_VERSION-rc1" -m "$NEXT_VERSION-rc1"
-      git push origin "$NEXT_VERSION-rc1"
-
       for id in $(git log --oneline $(git tag | sed -r "s/([0-9]+\.[0-9]+\.[0-9]+$)/\1\.99999/"|sort -V|sed s/\.99999$// | tail -n1).."$BRANCH" | grep pull | grep -Eo "[A-Z]+(-|_)[0-9]+"| sort | uniq );
       do
         echo $id
         summary=$(curl -s -u $JIRA_CREDS -X GET -H "Content-Type: application/json" "https://uk-gov-dft.atlassian.net/rest/api/2/issue/${id/_/-}" | jq '.fields.summary')
         echo "- **$id** : $summary" >> ../../RELEASE_NOTES.md
       done 
+      git tag -a "$NEXT_VERSION-rc1" -m "$NEXT_VERSION-rc1"
+      git push origin "$NEXT_VERSION-rc1"
     fi
     echo >> ../../RELEASE_NOTES.md
   cd ../
