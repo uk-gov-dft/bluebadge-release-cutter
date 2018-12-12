@@ -103,6 +103,9 @@ do
     if [ "$CHANGE" = "none" ]; then
       echo "no changes in this release" >> ../../RELEASE_NOTES.md
     else
+      git tag -a "$NEXT_VERSION" -m "$NEXT_VERSION"
+      git push origin "$NEXT_VERSION"
+
       for id in $(git log --oneline $(git tag | sed -r "s/([0-9]+\.[0-9]+\.[0-9]+$)/\1\.99999/"|sort -V|sed s/\.99999$// | tail -n1).."$BRANCH" | grep pull | grep -Eo "[A-Z]+(-|_)[0-9]+"| sort | uniq );
       do
         echo $id
