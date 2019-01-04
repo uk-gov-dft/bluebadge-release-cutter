@@ -34,6 +34,7 @@ APPLICATIONS=( \
   AZ,authorisation-service \
   MG,message-service \
   RD,referencedata-service \
+  PR,print-service
 )
 
 export PATH=$(pwd):$PATH
