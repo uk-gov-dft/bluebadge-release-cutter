@@ -35,6 +35,7 @@ APPLICATIONS=( \
   MG,message-service \
   RD,referencedata-service \
   PR,print-service
+  BC,bluebadge-common
 )
 
 export PATH=$(pwd):$PATH
