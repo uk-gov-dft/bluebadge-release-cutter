@@ -31,6 +31,8 @@ pipeline {
                     chmod +x jira_page_ctl
                     echo -n "$JIRA_CREDS" > jira_creds
                     chmod 600 jira_creds 
+                    pwd
+                    ls -la
                     ./cut.sh output
                 '''
 
