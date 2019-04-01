@@ -25,7 +25,7 @@ pipeline {
         stage('Release Cut') {
             steps {
                 sh '''
-                    curl -LO https://github.com/reaandrew/semverit/archive/master.zip && unzip master.zip && cd semverit-master/ && make dist && mv dist/semverit ../
+                    (curl -LO https://github.com/reaandrew/semverit/archive/master.zip && unzip master.zip && cd semverit-master/ && make dist && mv dist/semverit ../)
                     export PATH=./:$PATH
                     curl -s -o jira_page_ctl -H "Authorization: token ${GITHUB_TOKEN}" -H 'Accept: application/vnd.github.v3.raw' -O -L https://raw.githubusercontent.com/uk-gov-dft/shell-scripts/master/jira_page_ctl
                     chmod +x jira_page_ctl
