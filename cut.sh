@@ -80,7 +80,7 @@ do
 done
 
 echo "## Versions file" > ../versions-file.md
-echo "'''" >> ../versions-file.md
+echo "\`\`\`" >> ../versions-file.md
 
 # echo "# Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" > ../RELEASE_NOTES.md
 for application in "${APPLICATIONS[@]}"
@@ -122,7 +122,7 @@ do
   cd ../
 done
 
-echo "'''" >> ../versions-file.md
+echo "\`\`\`" >> ../versions-file.md
 
 cd ../
 cat ./versions-file.md >> ./RELEASE_NOTES.md
