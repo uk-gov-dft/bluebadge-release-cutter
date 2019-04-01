@@ -93,7 +93,7 @@ do
   NEXT_VERSION="$(semverit | cut -d, -f1)"
   CHANGE="$(semverit | cut -d, -f2)"
 
-  echo "\`export ${SHORTCODE}_VERSION=$NEXT_VERSION-release_$SAFE_RELEASE_NUMBER\`" >> ../../versions-file.md
+  echo "\`export ${SHORTCODE}_VERSION=$NEXT_VERSION-release_$SAFE_RELEASE_NUMBER\`\n" >> ../../versions-file.md
 
   git checkout --quiet -b "$RELEASE_BRANCH_NAME" > /dev/null
   git push --quiet origin "$RELEASE_BRANCH_NAME" > /dev/null
@@ -134,12 +134,12 @@ RELEASE_NOTES_PAGE_ID=330694691
   -u https://uk-gov-dft.atlassian.net/wiki/rest/api/content < RELEASE_NOTES.html
 
 
-# SERVICE_DESK_PAGE_ID=1016210
-# ./jira_page_ctl --project-key DBB \
-#   --creds-file ./confluence_creds  \
-#   -t "Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" \
-#   -a "$RELEASE_NOTES_PAGE_ID" \
-#   -u https://confluence.bluebadge-support.org.uk/rest/api/content < RELEASE_NOTES.html
+SERVICE_DESK_PAGE_ID=1016210
+./jira_page_ctl --project-key DBB \
+  --creds-file ./confluence_creds  \
+  -t "Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" \
+  -a "$SERVICE_DESK_PAGE_ID" \
+  -u https://confluence.bluebadge-support.org.uk/rest/api/content < RELEASE_NOTES.html
 
 
 # Publish to the Blue Badg Help Desk Confluence
