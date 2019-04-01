@@ -80,7 +80,6 @@ do
 done
 
 echo "## Versions file" > ../versions-file.md
-echo "\`\`\`" >> ../versions-file.md
 
 # echo "# Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" > ../RELEASE_NOTES.md
 for application in "${APPLICATIONS[@]}"
@@ -94,7 +93,7 @@ do
   NEXT_VERSION="$(semverit | cut -d, -f1)"
   CHANGE="$(semverit | cut -d, -f2)"
 
-  echo "export ${SHORTCODE}_VERSION=$NEXT_VERSION-release_$SAFE_RELEASE_NUMBER" >> ../../versions-file.md
+  echo "\`export ${SHORTCODE}_VERSION=$NEXT_VERSION-release_$SAFE_RELEASE_NUMBER\`" >> ../../versions-file.md
 
   git checkout --quiet -b "$RELEASE_BRANCH_NAME" > /dev/null
   git push --quiet origin "$RELEASE_BRANCH_NAME" > /dev/null
@@ -121,8 +120,6 @@ do
   echo >> ../../RELEASE_NOTES.md
   cd ../
 done
-
-echo "\`\`\`" >> ../versions-file.md
 
 cd ../
 cat ./versions-file.md >> ./RELEASE_NOTES.md
