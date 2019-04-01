@@ -135,7 +135,7 @@ RELEASE_NOTES_PAGE_ID=330694691
 
 
 SERVICE_DESK_PAGE_ID=1016210
-./jira_page_ctl --project-key DBB \
+./jira_page_ctl --project-key IBBS \
   --creds-file ./confluence_creds  \
   -t "Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" \
   -a "$SERVICE_DESK_PAGE_ID" \
