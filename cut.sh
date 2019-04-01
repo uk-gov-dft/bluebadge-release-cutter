@@ -79,49 +79,57 @@ do
   cd ../
 done
 
+echo "## Versions file" > ../versions-file.md
+echo "'''" >> ../versions-file.md
 
-echo "# Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" > ../RELEASE_NOTES.md
+# echo "# Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" > ../RELEASE_NOTES.md
 for application in "${APPLICATIONS[@]}"
 do
   SHORTCODE=$(echo -n "$application" | cut -d, -f1)
   NAME=$(echo -n "$application" | cut -d, -f2)
 
   cd "$NAME"
-    git checkout --quiet "$BRANCH" > /dev/null
+  git checkout --quiet "$BRANCH" > /dev/null
 
-    NEXT_VERSION="$(semverit | cut -d, -f1)"
-    CHANGE="$(semverit | cut -d, -f2)"
+  NEXT_VERSION="$(semverit | cut -d, -f1)"
+  CHANGE="$(semverit | cut -d, -f2)"
 
-    git checkout --quiet -b "$RELEASE_BRANCH_NAME" > /dev/null
-    git push --quiet origin "$RELEASE_BRANCH_NAME" > /dev/null
+  echo "export ${SHORTCODE}_VERSION=$NEXT_VERSION-release_$SAFE_RELEASE_NUMBER" >> ../../versions-file.md
 
-    git status
-    pwd
+  git checkout --quiet -b "$RELEASE_BRANCH_NAME" > /dev/null
+  git push --quiet origin "$RELEASE_BRANCH_NAME" > /dev/null
 
-    echo "## $NAME $NEXT_VERSION $(date -u)" >> ../../RELEASE_NOTES.md
-    echo
+  git status
+  pwd
 
-    echo "Checking Change - $CHANGE"
-    if [ "$CHANGE" = "none" ]; then
-      echo "no changes in this release" >> ../../RELEASE_NOTES.md
-    else
-      for id in $(git log --oneline $(git tag | sed -r "s/([0-9]+\.[0-9]+\.[0-9]+$)/\1\.99999/"|sort -V|sed s/\.99999$// | tail -n1).."$BRANCH" | grep pull | grep -Eo "[A-Z]+(-|_)[0-9]+"| sort | uniq );
-      do
-        echo $id
-        summary=$(curl -s -u $JIRA_CREDS -X GET -H "Content-Type: application/json" "https://uk-gov-dft.atlassian.net/rest/api/2/issue/${id/_/-}" | jq '.fields.summary')
-        echo "- **$id** : $summary" >> ../../RELEASE_NOTES.md
-      done 
-      git tag -a "$NEXT_VERSION" -m "$NEXT_VERSION"
-      git push origin "$NEXT_VERSION"
-    fi
-    echo >> ../../RELEASE_NOTES.md
+  echo "## $NAME $NEXT_VERSION $(date -u)" >> ../../RELEASE_NOTES.md
+  echo
+
+  echo "Checking Change - $CHANGE"
+  if [ "$CHANGE" = "none" ]; then
+    echo "no changes in this release" >> ../../RELEASE_NOTES.md
+  else
+    for id in $(git log --oneline $(git tag | sed -r "s/([0-9]+\.[0-9]+\.[0-9]+$)/\1\.99999/"|sort -V|sed s/\.99999$// | tail -n1).."$BRANCH" | grep pull | grep -Eo "[A-Z]+(-|_)[0-9]+"| sort | uniq );
+    do
+      echo $id
+      summary=$(curl -s -u $JIRA_CREDS -X GET -H "Content-Type: application/json" "https://uk-gov-dft.atlassian.net/rest/api/2/issue/${id/_/-}" | jq '.fields.summary')
+      echo "- **$id** : $summary" >> ../../RELEASE_NOTES.md
+    done 
+    git tag -a "$NEXT_VERSION" -m "$NEXT_VERSION"
+    git push origin "$NEXT_VERSION"
+  fi
+  echo >> ../../RELEASE_NOTES.md
   cd ../
 done
 
+echo "'''" >> ../versions-file.md
+
 cd ../
+cat ./versions-file.md >> ./RELEASE_NOTES.md
 ~/.local/bin/markdown2 ./RELEASE_NOTES.md > RELEASE_NOTES.html
 
 # Publish to the Blue Badge Development Confluence
-./jira_page_ctl --project-key DBB --creds-file ./jira_creds  -t "Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" -a 330694691 < RELEASE_NOTES.html
+RELEASE_NOTES_PAGE_ID=330694691
+./jira_page_ctl --project-key DBB --creds-file ./jira_creds  -t "Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" -a "$RELEASE_NOTES_PAGE_ID" < RELEASE_NOTES.html
 
 # Publish to the Blue Badg Help Desk Confluence
