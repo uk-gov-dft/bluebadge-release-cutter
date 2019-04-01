@@ -10,6 +10,7 @@ pipeline {
         RELEASE_NUMBER="${params.RELEASE_NUMBER}"
         GITHUB_TOKEN=credentials('GITHUB_TOKEN')
         JIRA_CREDS=credentials('JIRA_CREDS')
+        BLUEBADGEBOT=credentials('bluebadgebot')
      }
 
     stages {
@@ -31,6 +32,7 @@ pipeline {
                     chmod +x jira_page_ctl
                     echo -n "$JIRA_CREDS" > jira_creds
                     chmod 600 jira_creds 
+                    echo -n "$BLUEBADGEBOT" > confluence_creds
                     pwd
                     ls -la
                     ./cut.sh output

@@ -127,6 +127,19 @@ cat ./versions-file.md >> ./RELEASE_NOTES.md
 
 # Publish to the Blue Badge Development Confluence
 RELEASE_NOTES_PAGE_ID=330694691
-./jira_page_ctl --project-key DBB --creds-file ./jira_creds  -t "Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" -a "$RELEASE_NOTES_PAGE_ID" < RELEASE_NOTES.html
+./jira_page_ctl --project-key DBB \
+  --creds-file ./jira_creds  \
+  -t "Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" \
+  -a "$RELEASE_NOTES_PAGE_ID" \
+  -u https://uk-gov-dft.atlassian.net/wiki/rest/api/content < RELEASE_NOTES.html
+
+RELEASE_NOTES_PAGE_ID=1016210
+./jira_page_ctl --project-key DBB \
+  --creds-file ./confluence_creds  \
+  -t "Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" \
+  -a "$RELEASE_NOTES_PAGE_ID" \
+  -u https://confluence.bluebadge-support.org.uk/rest/api/content < RELEASE_NOTES.html
+
+SERVICE_DESK_PAGE_ID=1016210
 
 # Publish to the Blue Badg Help Desk Confluence
