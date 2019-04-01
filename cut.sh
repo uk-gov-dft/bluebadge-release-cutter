@@ -133,13 +133,13 @@ RELEASE_NOTES_PAGE_ID=330694691
   -a "$RELEASE_NOTES_PAGE_ID" \
   -u https://uk-gov-dft.atlassian.net/wiki/rest/api/content < RELEASE_NOTES.html
 
-RELEASE_NOTES_PAGE_ID=1016210
-./jira_page_ctl --project-key DBB \
-  --creds-file ./confluence_creds  \
-  -t "Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" \
-  -a "$RELEASE_NOTES_PAGE_ID" \
-  -u https://confluence.bluebadge-support.org.uk/rest/api/content < RELEASE_NOTES.html
 
-SERVICE_DESK_PAGE_ID=1016210
+# SERVICE_DESK_PAGE_ID=1016210
+# ./jira_page_ctl --project-key DBB \
+#   --creds-file ./confluence_creds  \
+#   -t "Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" \
+#   -a "$RELEASE_NOTES_PAGE_ID" \
+#   -u https://confluence.bluebadge-support.org.uk/rest/api/content < RELEASE_NOTES.html
+
 
 # Publish to the Blue Badg Help Desk Confluence
