@@ -36,6 +36,7 @@ APPLICATIONS=( \
   MG,message-service \
   RD,referencedata-service \
   PR,print-service
+  CS,crypto-service  
 )
 
 export PATH=$(pwd):$PATH
