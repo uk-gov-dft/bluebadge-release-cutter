@@ -34,7 +34,8 @@ APPLICATIONS=( \
   AZ,authorisation-service \
   MG,message-service \
   RD,referencedata-service \
-  PR,print-service \
+  PR,print-service
+  CS,crypto-service  
   PY,payment-service
 )
 
