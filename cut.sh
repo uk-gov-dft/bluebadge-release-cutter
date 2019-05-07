@@ -37,6 +37,7 @@ APPLICATIONS=( \
   RD,referencedata-service \
   PR,print-service
   CS,crypto-service  
+  PY,payment-service
 )
 
 export PATH=$(pwd):$PATH
@@ -121,3 +122,8 @@ done
 
 cd ../
 ~/.local/bin/markdown2 ./RELEASE_NOTES.md > RELEASE_NOTES.html
+
+# Publish to the Blue Badge Development Confluence
+./jira_page_ctl --project-key DBB --creds-file ./jira_creds  -t "Release Notes #$SAFE_RELEASE_NUMBER $(date -u)" -a 330694691 < RELEASE_NOTES.html
+
+# Publish to the Blue Badg Help Desk Confluence
